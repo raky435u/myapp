@@ -41,7 +41,7 @@ class ConsumerDashboardState extends State<ConsumerDashboard> {
   Future<void> _fetchCrops() async {
     try {
       final cropService =
-          new CropService(); // Assuming CropService has a default constructor
+          CropService(); // Assuming CropService has a default constructor
       final fetchedCrops =
           await cropService.fetchCrops(); // Assuming a fetchCrops method
       setState(() {
