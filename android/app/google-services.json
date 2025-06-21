@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "319082744161",
+    "project_id": "api-gateway-qct04",
+    "storage_bucket": "api-gateway-qct04.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319082744161:android:c8ba8738abeb194dd55d20",
+        "android_client_info": {
+          "package_name": "farmer.vibhaitsolutions.gatway.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBvIHzHeDe-K-rl1RxgMyiUueuTwLg1i4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
