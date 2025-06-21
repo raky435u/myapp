@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:developer';
 
 class SignInUpForm extends StatefulWidget {
-  const SignInUpForm({super.key});
+  const SignInUpForm({super.key, required Null Function() onSignInUpSuccess});
 
   @override
-  _SignInUpFormState createState() => _SignInUpFormState();
+  SignInUpFormState createState() => SignInUpFormState();
 }
 
-class _SignInUpFormState extends State<SignInUpForm> with SingleTickerProviderStateMixin {
+class SignInUpFormState extends State<SignInUpForm> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final GlobalKey<FormState> _signInFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _signUpFormKey = GlobalKey<FormState>();
@@ -38,7 +39,7 @@ class _SignInUpFormState extends State<SignInUpForm> with SingleTickerProviderSt
   void _signIn() {
     if (_signInFormKey.currentState!.validate()) {
       // Process sign in
-      print('Signing in with email: ${_signInEmailController.text} and password: ${_signInPasswordController.text}');
+      log('Signing in with email: ${_signInEmailController.text} and password: ${_signInPasswordController.text}', name: 'SignInUpForm');
 
       // TODO: Implement actual authentication logic here.
       // After successful authentication, determine the user type (farmer or consumer).
@@ -55,7 +56,7 @@ class _SignInUpFormState extends State<SignInUpForm> with SingleTickerProviderSt
   void _signUp() {
     if (_signUpFormKey.currentState!.validate()) {
       // Process sign up
-      print('Signing up with email: ${_signUpEmailController.text} and password: ${_signUpPasswordController.text}');
+      log('Signing up with email: ${_signUpEmailController.text} and password: ${_signUpPasswordController.text}', name: 'SignInUpForm');
     }
   }
 

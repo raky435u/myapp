@@ -5,10 +5,10 @@ class LocationAccessScreen extends StatefulWidget {
   const LocationAccessScreen({super.key});
 
   @override
-  _LocationAccessScreenState createState() => _LocationAccessScreenState();
+  LocationAccessScreenState createState() => LocationAccessScreenState();
 }
 
-class _LocationAccessScreenState extends State<LocationAccessScreen> {
+class LocationAccessScreenState extends State<LocationAccessScreen> {
   String _locationMessage = "Grant location access to find nearby farmers.";
   bool _isLoading = false;
 

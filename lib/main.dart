@@ -10,9 +10,9 @@ class Crop {
   final String unit; // e.g., "kg", "dozen"
   final int availableQuantity;
 
-  var category;
+  String? category;
 
-  var consumerDescription;
+  String? consumerDescription;
 
   Crop({
     required this.name,
@@ -113,7 +113,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: appTheme,
-        home: const SignInUpForm(),
+        home: SignInUpForm(onSignInUpSuccess: () {}),
       ),
     );
   }

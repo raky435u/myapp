@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:developer';
 
 class CropService {
   final String apiUrl = "https://savefarmer.vibhaitsolutions.in/api/crops";
@@ -13,18 +14,26 @@ class CropService {
         return list.map((model) => Crop.fromJson(model)).toList();
       } else {
         // Handle non-200 status codes
-        print('Failed to load crops: ${response.statusCode}');
+        log('Failed to load crops: ${response.statusCode}', name: 'CropService');
         return []; // Return an empty list or throw an exception
       }
     } catch (e) {
       // Handle network errors or other exceptions
-      print('Error fetching crops: $e');
+      log('Error fetching crops: $e', name: 'CropService');
       return []; // Return an empty list or throw an exception
     }
   }
+
+  Future fetchCrops() async {}
 }
 
 class Crop {
+  late String name;
+
+  var category;
+
+  var consumerDescription;
+
   static fromJson(model) {}
 }
 

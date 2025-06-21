@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:developer';
 
 
 class FarmersList extends StatelessWidget {
@@ -70,10 +71,10 @@ class AddCropForm extends StatefulWidget {
   const AddCropForm({super.key});
 
   @override
-  _AddCropFormState createState() => _AddCropFormState();
+  AddCropFormState createState() => AddCropFormState();
 }
 
-class _AddCropFormState extends State<AddCropForm> {
+class AddCropFormState extends State<AddCropForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _cropNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -90,10 +91,10 @@ class _AddCropFormState extends State<AddCropForm> {
   void _saveCrop() {
     if (_formKey.currentState!.validate()) {
       // Process saving the crop data
-      print('Saving crop:');
-      print('  Name: ${_cropNameController.text}');
-      print('  Quantity: ${_quantityController.text}');
-      print('  Price: ${_priceController.text}');
+      log('Saving crop:', name: 'AddCropForm');
+      log('  Name: ${_cropNameController.text}', name: 'AddCropForm');
+      log('  Quantity: ${_quantityController.text}', name: 'AddCropForm');
+      log('  Price: ${_priceController.text}', name: 'AddCropForm');
 
       // After saving, you might want to close the form or navigate back
       Navigator.pop(context);
