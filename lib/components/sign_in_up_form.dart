@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
+import '../services/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignInUpForm extends StatefulWidget {
+  // The callback is required, ensure it's used correctly where sign-in/up succeeds
   const SignInUpForm({super.key, required Null Function() onSignInUpSuccess});
 
   @override
@@ -56,7 +59,22 @@ class SignInUpFormState extends State<SignInUpForm> with SingleTickerProviderSta
   void _signUp() {
     if (_signUpFormKey.currentState!.validate()) {
       // Process sign up
-      log('Signing up with email: ${_signUpEmailController.text} and password: ${_signUpPasswordController.text}', name: 'SignInUpForm');
+      AuthService().signUpWithEmailAndPassword(
+        _signUpEmailController.text,
+        _signUpPasswordController.text,
+      ).then((userCredential) async {
+        if (userCredential != null && userCredential.user != null) {
+          // User successfully signed up
+          log('User signed up: ${userCredential.user!.uid}', name: 'SignInUpForm');
+          // Store user role in Firestore
+          await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+            'role': 'farmer', // Placeholder: Determine role during sign-up
+          });
+          // TODO: Navigate to the appropriate dashboard based on role after sign-up
+        }
+      }).catchError((error) {
+        log('Sign up error: $error', name: 'SignInUpForm');
+      });
     }
   }
 
@@ -113,9 +131,43 @@ class SignInUpFormState extends State<SignInUpForm> with SingleTickerProviderSta
               },
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _signIn,
-              child: const Text('Sign In'),
+            FutureBuilder<bool>(
+              future: AuthService().canAuthenticateWithBiometrics(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+                if (snapshot.hasError || !snapshot.hasData || !snapshot.data!) {
+                  // If biometrics is not available or not enabled, just show the sign-in button
+                  return ElevatedButton(
+                    onPressed: _signIn,
+                    child: const Text('Sign In'),
+                  );
+                }
+
+                // If biometrics is available and enabled, show both button and icon
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _signIn,
+                        child: const Text('Sign In'),
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    IconButton(
+                      icon: Icon(Icons.fingerprint), // Or Icons.face
+                      onPressed: () async {
+                         bool authenticated = await AuthService().authenticateWithBiometrics();
+                         if (authenticated) {
+                           // TODO: Implement logic to retrieve stored credentials and sign in the user
+                         }
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),

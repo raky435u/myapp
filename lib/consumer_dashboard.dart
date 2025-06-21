@@ -1,162 +1,97 @@
-// ignore_for_file: unused_import
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/components/sign_in_up_form.dart' show SignInUpForm;
-import 'package:myapp/main.dart' hide Crop;
-import 'package:myapp/services/crop_service.dart';
-// Assuming you have a Crop model
-// Assuming you have a service to fetch crops
-// Assuming you have this component
-// Assuming you have this component
-// Assuming a generic sign-in/up form component
+import 'package:myapp/models/crop.dart';
+import 'package:myapp/services/firestore_service.dart';
 
-class ConsumerDashboard extends StatefulWidget {
-  const ConsumerDashboard({super.key});
+class FarmersDashboard extends StatefulWidget {
+  const FarmersDashboard({Key? key}) : super(key: key);
 
   @override
-  ConsumerDashboardState createState() => ConsumerDashboardState();
+  FarmersDashboardState createState() => FarmersDashboardState();
 }
 
-class ConsumerDashboardState extends State<ConsumerDashboard> {
-  bool _showSignInUp = true; // Flag to show sign-in/up initially
+class FarmersDashboardState extends State<FarmersDashboard> {
   String _selectedCategory = 'All';
-  final List<String> _categories = [
-    'All',
-    'Fruits',
-    'Vegetables',
-    'Grains',
-  ]; // Example categories
-
-  List<Crop> _crops = [];
-  List<Crop> _filteredCrops = [];
-  bool _isLoading = true;
+  final List<String> _categories = ['All', 'Fruits', 'Vegetables', 'Grains']; // Example categories
 
   @override
-  void initState() {
-    super.initState();
-    _fetchCrops();
-  }
-
-  Future<void> _fetchCrops() async {
-    try {
-      final cropService =
-          CropService(); // Assuming CropService has a default constructor
-      final fetchedCrops =
-          await cropService.fetchCrops(); // Assuming a fetchCrops method
-      setState(() {
-        _crops = fetchedCrops;
-        _isLoading = false;
-        _filterCrops(); // Filter initially based on 'All'
-      });
-    } catch (e) {
-      // Handle errors
-      if (kDebugMode) {
-        print('Error fetching crops: $e');
-      } // Consider using a proper logging mechanism
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _filterCrops() {
-    if (_selectedCategory == 'All') {
-      _filteredCrops = _crops;
-    } else {
-      _filteredCrops =
-          _crops
-              .where(
-                (crop) => crop.category == _selectedCategory,
-              ) // Assuming Crop model has a 'category' field
-              .toList();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_showSignInUp) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Welcome')),
-        body: Center(
-          child: SignInUpForm(
-            // Assuming SignInUpForm handles sign-in/up and has a callback
-            onSignInUpSuccess: () {
-              setState(() {
-                _showSignInUp = false; // Hide form on successful sign-in/up
-              });
-            },
-          ),
-        ),
-      );
-    }
-
+ Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Consumer Dashboard')),
+      appBar: AppBar(title: const Text('Farmers Dashboard')),
       body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                children: [
-                  // Category selection (example using a Row of Chips)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children:
-                            _categories.map((category) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4.0,
-                                ),
-                                child: FilterChip(
-                                  label: Text(category),
-                                  selected: _selectedCategory == category,
-                                  onSelected: (selected) {
-                                    if (selected) {
-                                      setState(() {
-                                        _selectedCategory = category;
-                                        _filterCrops(); // Filter when category changes
-                                      });
-                                    }
-                                  },
-                                ),
-                              );
-                            }).toList(),
-                      ),
-                    ),
-                  ),
-                  // Crop List
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _filteredCrops.length,
-                      itemBuilder: (context, index) {
-                        final crop = _filteredCrops[index];
-                        return ListTile(
-                          title: Text(
-                            crop.name,
-                          ), // Assuming Crop model has a 'name' field
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Category: ${crop.category}',
-                              ), // Assuming Crop model has a 'category' field
-                              Text(
-                                'Description: ${crop.consumerDescription}',
-                              ), // Display consumer description
-                              // Add farmer information here if available in the Crop model
-                              // Example:
-                              // Text('Farmer: ${crop.farmerName}'),
-                            ],
-                          ),
-                          // You can add a trailing widget or an onTap handler to navigate to a detailed view
-                        );
+ Column(
+ children: [
+          // Category selection (example using a Row of Chips)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: _categories.map((category) {
+ return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: FilterChip(
+                      label: Text(category),
+                      selected: _selectedCategory == category,
+                      onSelected: (selected) {
+ if (selected) {
+ setState(() {
+ _selectedCategory = category;
+                            // No _filterCrops here, filtering is done in StreamBuilder
+ });
+ }
                       },
                     ),
                   ),
-                ],
+                }).toList(),
+              ),
+            ),
+          ),
+          // Crop List using StreamBuilder
+          Expanded(
+            child: StreamBuilder<List<Crop>>(
+              stream: FirestoreService().getCrops(), // Use FirestoreService stream
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No crops available.'));
+                }
+
+                final allCrops = snapshot.data!;
+                final filteredCrops = _selectedCategory == 'All'
+                    ? allCrops
+                    : allCrops
+                        .where((crop) => crop.category == _selectedCategory)
+                        .toList();
+
+                return ListView.builder(
+                  itemCount: filteredCrops.length,
+                  itemBuilder: (context, index) {
+                    final crop = filteredCrops[index];
+ return ListTile(
+                      title: Text(crop.name),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Add checks for null or missing fields if necessary
+                          Text('Category: ${crop.category}'),
+                          Text('Price: ${crop.price.toStringAsFixed(2)}'),
+                          Text('Quantity: ${crop.quantity}'),
+                          // You can add edit/delete buttons here later
+                        ],
+                      ),
+ );
+                  },
+                );
+              },
+            ),
+          ),
+ ],
               ),
     );
   }

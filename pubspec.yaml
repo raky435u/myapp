@@ -41,6 +41,11 @@ dependencies:
   geolocator: ^12.0.0 # Added for location access
   http: ^1.4.0
   # Example:
+  firebase_auth: ^5.0.0 # Add firebase_auth for authentication
+  local_auth: ^2.2.2 # Add local_auth for biometric authentication
+  shared_preferences: ^2.2.3 # Add shared_preferences for storing user preferences
+  flutter_secure_storage: ^9.0.0 # Add flutter_secure_storage for secure storage
+  cloud_firestore: ^5.6.9
   # http: ^1.2.1
 
 dev_dependencies:
